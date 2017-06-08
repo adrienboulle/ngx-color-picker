@@ -2,15 +2,15 @@ import { Component, ElementRef, ViewChild, ChangeDetectorRef } from '@angular/co
 import { ColorPickerService } from './color-picker.service';
 import { Rgba, Hsla, Hsva } from './formats';
 import { SliderPosition, SliderDimension } from './helpers';
-export class ColorPickerComponent {
-    constructor(el, cdr, service) {
+var ColorPickerComponent = (function () {
+    function ColorPickerComponent(el, cdr, service) {
         this.el = el;
         this.cdr = cdr;
         this.service = service;
         this.dialogArrowSize = 10;
         this.dialogArrowOffset = 15;
     }
-    setDialog(instance, elementRef, color, cpPosition, cpPositionOffset, cpPositionRelativeToArrow, cpOutputFormat, cpPresetLabel, cpPresetColors, cpCancelButton, cpCancelButtonClass, cpCancelButtonText, cpOKButton, cpOKButtonClass, cpOKButtonText, cpHeight, cpWidth, cpIgnoredElements, cpDialogDisplay, cpSaveClickOutside, cpAlphaChannel) {
+    ColorPickerComponent.prototype.setDialog = function (instance, elementRef, color, cpPosition, cpPositionOffset, cpPositionRelativeToArrow, cpOutputFormat, cpPresetLabel, cpPresetColors, cpCancelButton, cpCancelButtonClass, cpCancelButtonText, cpOKButton, cpOKButtonClass, cpOKButtonText, cpHeight, cpWidth, cpIgnoredElements, cpDialogDisplay, cpSaveClickOutside, cpAlphaChannel) {
         this.directiveInstance = instance;
         this.initialColor = color;
         this.directiveElementRef = elementRef;
@@ -41,10 +41,11 @@ export class ColorPickerComponent {
         }
         this.cpSaveClickOutside = cpSaveClickOutside;
         this.cpAlphaChannel = cpAlphaChannel;
-    }
-    ngOnInit() {
-        let alphaWidth = this.alphaSlider.nativeElement.offsetWidth;
-        let hueWidth = this.hueSlider.nativeElement.offsetWidth;
+    };
+    ColorPickerComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        var alphaWidth = this.alphaSlider.nativeElement.offsetWidth;
+        var hueWidth = this.hueSlider.nativeElement.offsetWidth;
         this.sliderDimMax = new SliderDimension(hueWidth, this.cpWidth, 130, alphaWidth);
         this.slider = new SliderPosition(0, 0, 0, 0);
         if (this.cpOutputFormat === 'rgba') {
@@ -56,48 +57,50 @@ export class ColorPickerComponent {
         else {
             this.format = 0;
         }
-        this.listenerMouseDown = (event) => { this.onMouseDown(event); };
-        this.listenerResize = () => { this.onResize(); };
+        this.listenerMouseDown = function (event) { _this.onMouseDown(event); };
+        this.listenerResize = function () { _this.onResize(); };
         this.openDialog(this.initialColor, false);
-    }
-    ngAfterViewInit() {
+    };
+    ColorPickerComponent.prototype.ngAfterViewInit = function () {
         if (this.cpWidth != 230) {
-            let alphaWidth = this.alphaSlider.nativeElement.offsetWidth;
-            let hueWidth = this.hueSlider.nativeElement.offsetWidth;
+            var alphaWidth = this.alphaSlider.nativeElement.offsetWidth;
+            var hueWidth = this.hueSlider.nativeElement.offsetWidth;
             this.sliderDimMax = new SliderDimension(hueWidth, this.cpWidth, 130, alphaWidth);
             this.update(false);
             this.cdr.detectChanges();
         }
-    }
-    setInitialColor(color) {
+    };
+    ColorPickerComponent.prototype.setInitialColor = function (color) {
         this.initialColor = color;
-    }
-    setPresetConfig(cpPresetLabel, cpPresetColors) {
+    };
+    ColorPickerComponent.prototype.setPresetConfig = function (cpPresetLabel, cpPresetColors) {
         this.cpPresetLabel = cpPresetLabel;
         this.cpPresetColors = cpPresetColors;
-    }
-    openDialog(color, emit = true) {
+    };
+    ColorPickerComponent.prototype.openDialog = function (color, emit) {
+        if (emit === void 0) { emit = true; }
         this.setInitialColor(color);
         this.setColorFromString(color, emit);
         this.openColorPicker();
-    }
-    cancelColor() {
+    };
+    ColorPickerComponent.prototype.cancelColor = function () {
         this.setColorFromString(this.initialColor, true);
         if (this.cpDialogDisplay === 'popup') {
             this.directiveInstance.colorChanged(this.initialColor, true);
             this.closeColorPicker();
         }
-    }
-    oKColor() {
+    };
+    ColorPickerComponent.prototype.oKColor = function () {
         if (this.cpDialogDisplay === 'popup') {
             this.closeColorPicker();
         }
         if (this.outputColor) {
             this.directiveInstance.colorSelected(this.outputColor);
         }
-    }
-    setColorFromString(value, emit = true) {
-        let hsva;
+    };
+    ColorPickerComponent.prototype.setColorFromString = function (value, emit) {
+        if (emit === void 0) { emit = true; }
+        var hsva;
         if (this.cpAlphaChannel === 'hex8') {
             hsva = this.service.stringToHsva(value, true);
             if (!hsva && !this.hsva) {
@@ -111,49 +114,50 @@ export class ColorPickerComponent {
             this.hsva = hsva;
             this.update(emit);
         }
-    }
-    onMouseDown(event) {
+    };
+    ColorPickerComponent.prototype.onMouseDown = function (event) {
         if ((!this.isDescendant(this.el.nativeElement, event.target)
             && event.target != this.directiveElementRef.nativeElement &&
-            this.cpIgnoredElements.filter((item) => item === event.target).length === 0) && this.cpDialogDisplay === 'popup') {
+            this.cpIgnoredElements.filter(function (item) { return item === event.target; }).length === 0) && this.cpDialogDisplay === 'popup') {
             if (!this.cpSaveClickOutside) {
                 this.setColorFromString(this.initialColor, false);
                 this.directiveInstance.colorChanged(this.initialColor);
             }
             this.closeColorPicker();
         }
-    }
-    openColorPicker() {
+    };
+    ColorPickerComponent.prototype.openColorPicker = function () {
+        var _this = this;
         if (!this.show) {
             this.show = true;
             this.hidden = true;
-            setTimeout(() => {
-                this.setDialogPosition();
-                this.hidden = false;
-                this.cdr.detectChanges();
+            setTimeout(function () {
+                _this.setDialogPosition();
+                _this.hidden = false;
+                _this.cdr.detectChanges();
             }, 0);
             this.directiveInstance.toggle(true);
             document.addEventListener('mousedown', this.listenerMouseDown);
             window.addEventListener('resize', this.listenerResize);
         }
-    }
-    closeColorPicker() {
+    };
+    ColorPickerComponent.prototype.closeColorPicker = function () {
         if (this.show) {
             this.show = false;
             this.directiveInstance.toggle(false);
             document.removeEventListener('mousedown', this.listenerMouseDown);
             window.removeEventListener('resize', this.listenerResize);
         }
-    }
-    onResize() {
+    };
+    ColorPickerComponent.prototype.onResize = function () {
         if (this.position === 'fixed') {
             this.setDialogPosition();
         }
-    }
-    setDialogPosition() {
-        let dialogHeight = this.dialogElement.nativeElement.offsetHeight;
-        let node = this.directiveElementRef.nativeElement, position = 'static';
-        let parentNode = null;
+    };
+    ColorPickerComponent.prototype.setDialogPosition = function () {
+        var dialogHeight = this.dialogElement.nativeElement.offsetHeight;
+        var node = this.directiveElementRef.nativeElement, position = 'static';
+        var parentNode = null;
         while (node !== null && node.tagName !== 'HTML') {
             position = window.getComputedStyle(node).getPropertyValue("position");
             if (position !== 'static' && parentNode === null) {
@@ -196,79 +200,80 @@ export class ColorPickerComponent {
             this.top += boxDirective.height * this.cpPositionOffset / 100 - this.dialogArrowOffset;
             this.left += boxDirective.width + this.dialogArrowSize - 2;
         }
-    }
-    setSaturation(val) {
-        let hsla = this.service.hsva2hsla(this.hsva);
+    };
+    ColorPickerComponent.prototype.setSaturation = function (val) {
+        var hsla = this.service.hsva2hsla(this.hsva);
         hsla.s = val.v / val.rg;
         this.hsva = this.service.hsla2hsva(hsla);
         this.update();
         this.directiveInstance.inputChanged({ slider: 'saturation', value: val });
-    }
-    setLightness(val) {
-        let hsla = this.service.hsva2hsla(this.hsva);
+    };
+    ColorPickerComponent.prototype.setLightness = function (val) {
+        var hsla = this.service.hsva2hsla(this.hsva);
         hsla.l = val.v / val.rg;
         this.hsva = this.service.hsla2hsva(hsla);
         this.update();
         this.directiveInstance.inputChanged({ slider: 'lightness', value: val });
-    }
-    setHue(val) {
+    };
+    ColorPickerComponent.prototype.setHue = function (val) {
         this.hsva.h = val.v / val.rg;
         this.update();
         this.directiveInstance.sliderChanged({ slider: 'hue', value: val });
-    }
-    setAlpha(val) {
+    };
+    ColorPickerComponent.prototype.setAlpha = function (val) {
         this.hsva.a = val.v / val.rg;
         this.update();
         this.directiveInstance.sliderChanged({ slider: 'alpha', value: val });
-    }
-    setR(val) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+    };
+    ColorPickerComponent.prototype.setR = function (val) {
+        var rgba = this.service.hsvaToRgba(this.hsva);
         rgba.r = val.v / val.rg;
         this.hsva = this.service.rgbaToHsva(rgba);
         this.update();
         this.directiveInstance.inputChanged({ slider: 'red', value: val });
-    }
-    setG(val) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+    };
+    ColorPickerComponent.prototype.setG = function (val) {
+        var rgba = this.service.hsvaToRgba(this.hsva);
         rgba.g = val.v / val.rg;
         this.hsva = this.service.rgbaToHsva(rgba);
         this.update();
         this.directiveInstance.inputChanged({ slider: 'green', value: val });
-    }
-    setB(val) {
-        let rgba = this.service.hsvaToRgba(this.hsva);
+    };
+    ColorPickerComponent.prototype.setB = function (val) {
+        var rgba = this.service.hsvaToRgba(this.hsva);
         rgba.b = val.v / val.rg;
         this.hsva = this.service.rgbaToHsva(rgba);
         this.update();
         this.directiveInstance.inputChanged({ slider: 'blue', value: val });
-    }
-    setA(val) {
+    };
+    ColorPickerComponent.prototype.setA = function (val) {
         this.hsva.a = val.v / val.rg;
         this.update();
         this.directiveInstance.inputChanged({ slider: 'alpha', value: val });
-    }
-    setHex(val) {
+    };
+    ColorPickerComponent.prototype.setHex = function (val) {
         this.setColorFromString(val);
         this.directiveInstance.inputChanged({ slider: 'hex', value: val });
-    }
-    setSaturationAndBrightness(val) {
+    };
+    ColorPickerComponent.prototype.setSaturationAndBrightness = function (val) {
         this.hsva.s = val.s / val.rgX;
         this.hsva.v = val.v / val.rgY;
         this.update();
         this.directiveInstance.sliderChanged({ slider: 'saturation-lightness', value: val });
-    }
-    formatPolicy() {
+    };
+    ColorPickerComponent.prototype.formatPolicy = function () {
         this.format = (this.format + 1) % 3;
         if (this.format === 0 && this.hsva.a < 1 && this.cpAlphaChannel === 'hex6') {
             this.format++;
         }
         return this.format;
-    }
-    update(emit = true) {
+    };
+    ColorPickerComponent.prototype.update = function (emit) {
+        if (emit === void 0) { emit = true; }
         if (this.sliderDimMax) {
-            let hsla = this.service.hsva2hsla(this.hsva);
-            let rgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(this.hsva));
-            let hueRgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(new Hsva(this.hsva.h, 1, 1, 1)));
+            var hsla = this.service.hsva2hsla(this.hsva);
+            var rgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(this.hsva));
+            var hueRgba = this.service.denormalizeRGBA(this.service.hsvaToRgba(new Hsva(this.hsva.h, 1, 1, 1)));
             this.hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
             this.rgbaText = new Rgba(rgba.r, rgba.g, rgba.b, Math.round(rgba.a * 100) / 100);
             this.hexText = this.service.hexText(rgba, this.cpAlphaChannel === 'hex8');
@@ -277,7 +282,7 @@ export class ColorPickerComponent {
             if (this.format === 0 && this.hsva.a < 1 && this.cpAlphaChannel === 'hex6') {
                 this.format++;
             }
-            let lastOutput = this.outputColor;
+            var lastOutput = this.outputColor;
             this.outputColor = this.service.outputFormat(this.hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8');
             this.selectedColor = this.service.outputFormat(this.hsva, 'rgba', false);
             this.slider = new SliderPosition((this.hsva.h) * this.sliderDimMax.h - 8, this.hsva.s * this.sliderDimMax.s - 8, (1 - this.hsva.v) * this.sliderDimMax.v - 8, this.hsva.a * this.sliderDimMax.a - 8);
@@ -285,9 +290,9 @@ export class ColorPickerComponent {
                 this.directiveInstance.colorChanged(this.outputColor);
             }
         }
-    }
-    isDescendant(parent, child) {
-        let node = child.parentNode;
+    };
+    ColorPickerComponent.prototype.isDescendant = function (parent, child) {
+        var node = child.parentNode;
         while (node !== null) {
             if (node === parent) {
                 return true;
@@ -295,16 +300,18 @@ export class ColorPickerComponent {
             node = node.parentNode;
         }
         return false;
-    }
-    createBox(element, offset) {
+    };
+    ColorPickerComponent.prototype.createBox = function (element, offset) {
         return {
             top: element.getBoundingClientRect().top + (offset ? window.pageYOffset : 0),
             left: element.getBoundingClientRect().left + (offset ? window.pageXOffset : 0),
             width: element.offsetWidth,
             height: element.offsetHeight
         };
-    }
-}
+    };
+    return ColorPickerComponent;
+}());
+export { ColorPickerComponent };
 ColorPickerComponent.decorators = [
     { type: Component, args: [{
                 selector: 'color-picker',
@@ -313,11 +320,11 @@ ColorPickerComponent.decorators = [
             },] },
 ];
 /** @nocollapse */
-ColorPickerComponent.ctorParameters = () => [
+ColorPickerComponent.ctorParameters = function () { return [
     { type: ElementRef, },
     { type: ChangeDetectorRef, },
     { type: ColorPickerService, },
-];
+]; };
 ColorPickerComponent.propDecorators = {
     'hueSlider': [{ type: ViewChild, args: ['hueSlider',] },],
     'alphaSlider': [{ type: ViewChild, args: ['alphaSlider',] },],

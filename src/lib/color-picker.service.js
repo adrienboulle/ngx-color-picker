@@ -1,19 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Rgba, Hsla, Hsva } from './formats';
-export class ColorPickerService {
-    constructor() { }
-    hsla2hsva(hsla) {
-        let h = Math.min(hsla.h, 1), s = Math.min(hsla.s, 1), l = Math.min(hsla.l, 1), a = Math.min(hsla.a, 1);
+var ColorPickerService = (function () {
+    function ColorPickerService() {
+    }
+    ColorPickerService.prototype.hsla2hsva = function (hsla) {
+        var h = Math.min(hsla.h, 1), s = Math.min(hsla.s, 1), l = Math.min(hsla.l, 1), a = Math.min(hsla.a, 1);
         if (l === 0) {
             return new Hsva(h, 0, 0, a);
         }
         else {
-            let v = l + s * (1 - Math.abs(2 * l - 1)) / 2;
+            var v = l + s * (1 - Math.abs(2 * l - 1)) / 2;
             return new Hsva(h, 2 * (v - l) / v, v, a);
         }
-    }
-    hsva2hsla(hsva) {
-        let h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
+    };
+    ColorPickerService.prototype.hsva2hsla = function (hsva) {
+        var h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
         if (v === 0) {
             return new Hsla(h, 0, 0, a);
         }
@@ -21,15 +22,15 @@ export class ColorPickerService {
             return new Hsla(h, 1, 1, a);
         }
         else {
-            let l = v * (2 - s) / 2;
+            var l = v * (2 - s) / 2;
             return new Hsla(h, v * s / (1 - Math.abs(2 * l - 1)), l, a);
         }
-    }
-    rgbaToHsva(rgba) {
-        let r = Math.min(rgba.r, 1), g = Math.min(rgba.g, 1), b = Math.min(rgba.b, 1), a = Math.min(rgba.a, 1);
-        let max = Math.max(r, g, b), min = Math.min(r, g, b);
-        let h, s, v = max;
-        let d = max - min;
+    };
+    ColorPickerService.prototype.rgbaToHsva = function (rgba) {
+        var r = Math.min(rgba.r, 1), g = Math.min(rgba.g, 1), b = Math.min(rgba.b, 1), a = Math.min(rgba.a, 1);
+        var max = Math.max(r, g, b), min = Math.min(r, g, b);
+        var h, s, v = max;
+        var d = max - min;
         s = max === 0 ? 0 : d / max;
         if (max === min) {
             h = 0;
@@ -49,15 +50,15 @@ export class ColorPickerService {
             h /= 6;
         }
         return new Hsva(h, s, v, a);
-    }
-    hsvaToRgba(hsva) {
-        let h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
-        let r, g, b;
-        let i = Math.floor(h * 6);
-        let f = h * 6 - i;
-        let p = v * (1 - s);
-        let q = v * (1 - f * s);
-        let t = v * (1 - (1 - f) * s);
+    };
+    ColorPickerService.prototype.hsvaToRgba = function (hsva) {
+        var h = hsva.h, s = hsva.s, v = hsva.v, a = hsva.a;
+        var r, g, b;
+        var i = Math.floor(h * 6);
+        var f = h * 6 - i;
+        var p = v * (1 - s);
+        var q = v * (1 - f * s);
+        var t = v * (1 - (1 - f) * s);
         switch (i % 6) {
             case 0:
                 r = v, g = t, b = p;
@@ -79,9 +80,11 @@ export class ColorPickerService {
                 break;
         }
         return new Rgba(r, g, b, a);
-    }
-    stringToHsva(colorString = '', hex8 = false) {
-        let stringParsers = [
+    };
+    ColorPickerService.prototype.stringToHsva = function (colorString, hex8) {
+        if (colorString === void 0) { colorString = ''; }
+        if (hex8 === void 0) { hex8 = false; }
+        var stringParsers = [
             {
                 re: /(rgb)a?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*%?,\s*(\d{1,3})\s*%?(?:,\s*(\d+(?:\.\d+)?)\s*)?\)/,
                 parse: function (execResult) {
@@ -117,11 +120,11 @@ export class ColorPickerService {
             });
         }
         colorString = (colorString || '').toLowerCase();
-        let hsva = null;
-        for (let key in stringParsers) {
+        var hsva = null;
+        for (var key in stringParsers) {
             if (stringParsers.hasOwnProperty(key)) {
-                let parser = stringParsers[key];
-                let match = parser.re.exec(colorString), color = match && parser.parse(match);
+                var parser = stringParsers[key];
+                var match = parser.re.exec(colorString), color = match && parser.parse(match);
                 if (color) {
                     if (color instanceof Rgba) {
                         hsva = this.rgbaToHsva(color);
@@ -134,37 +137,37 @@ export class ColorPickerService {
             }
         }
         return hsva;
-    }
-    outputFormat(hsva, outputFormat, allowHex8) {
+    };
+    ColorPickerService.prototype.outputFormat = function (hsva, outputFormat, allowHex8) {
         if (hsva.a < 1) {
             switch (outputFormat) {
                 case 'hsla':
-                    let hsla = this.hsva2hsla(hsva);
-                    let hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
+                    var hsla = this.hsva2hsla(hsva);
+                    var hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
                     return 'hsla(' + hslaText.h + ',' + hslaText.s + '%,' + hslaText.l + '%,' + hslaText.a + ')';
                 default:
                     if (allowHex8 && outputFormat === 'hex')
                         return this.hexText(this.denormalizeRGBA(this.hsvaToRgba(hsva)), allowHex8);
-                    let rgba = this.denormalizeRGBA(this.hsvaToRgba(hsva));
+                    var rgba = this.denormalizeRGBA(this.hsvaToRgba(hsva));
                     return 'rgba(' + rgba.r + ',' + rgba.g + ',' + rgba.b + ',' + Math.round(rgba.a * 100) / 100 + ')';
             }
         }
         else {
             switch (outputFormat) {
                 case 'hsla':
-                    let hsla = this.hsva2hsla(hsva);
-                    let hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
+                    var hsla = this.hsva2hsla(hsva);
+                    var hslaText = new Hsla(Math.round((hsla.h) * 360), Math.round(hsla.s * 100), Math.round(hsla.l * 100), Math.round(hsla.a * 100) / 100);
                     return 'hsl(' + hslaText.h + ',' + hslaText.s + '%,' + hslaText.l + '%)';
                 case 'rgba':
-                    let rgba = this.denormalizeRGBA(this.hsvaToRgba(hsva));
+                    var rgba = this.denormalizeRGBA(this.hsvaToRgba(hsva));
                     return 'rgb(' + rgba.r + ',' + rgba.g + ',' + rgba.b + ')';
                 default:
                     return this.hexText(this.denormalizeRGBA(this.hsvaToRgba(hsva)), allowHex8);
             }
         }
-    }
-    hexText(rgba, allowHex8) {
-        let hexText = '#' + ((1 << 24) | (rgba.r << 16) | (rgba.g << 8) | rgba.b).toString(16).substr(1);
+    };
+    ColorPickerService.prototype.hexText = function (rgba, allowHex8) {
+        var hexText = '#' + ((1 << 24) | (rgba.r << 16) | (rgba.g << 8) | rgba.b).toString(16).substr(1);
         if (hexText[1] === hexText[2] && hexText[3] === hexText[4] && hexText[5] === hexText[6] && rgba.a === 1 && !allowHex8) {
             hexText = '#' + hexText[1] + hexText[3] + hexText[5];
         }
@@ -172,14 +175,16 @@ export class ColorPickerService {
             hexText += ((1 << 8) | Math.round(rgba.a * 255)).toString(16).substr(1);
         }
         return hexText;
-    }
-    denormalizeRGBA(rgba) {
+    };
+    ColorPickerService.prototype.denormalizeRGBA = function (rgba) {
         return new Rgba(Math.round(rgba.r * 255), Math.round(rgba.g * 255), Math.round(rgba.b * 255), rgba.a);
-    }
-}
+    };
+    return ColorPickerService;
+}());
+export { ColorPickerService };
 ColorPickerService.decorators = [
     { type: Injectable },
 ];
 /** @nocollapse */
-ColorPickerService.ctorParameters = () => [];
+ColorPickerService.ctorParameters = function () { return []; };
 //# sourceMappingURL=color-picker.service.js.map

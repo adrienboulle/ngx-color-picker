@@ -1,20 +1,22 @@
 import { Directive, Input, Output, EventEmitter, ElementRef } from '@angular/core';
-export class TextDirective {
-    constructor() {
+var TextDirective = (function () {
+    function TextDirective() {
         this.newValue = new EventEmitter();
     }
-    changeInput(value) {
+    TextDirective.prototype.changeInput = function (value) {
         if (this.rg === undefined) {
             this.newValue.emit(value);
         }
         else {
-            let numeric = parseFloat(value);
+            var numeric = parseFloat(value);
             if (!isNaN(numeric) && numeric >= 0 && numeric <= this.rg) {
                 this.newValue.emit({ v: numeric, rg: this.rg });
             }
         }
-    }
-}
+    };
+    return TextDirective;
+}());
+export { TextDirective };
 TextDirective.decorators = [
     { type: Directive, args: [{
                 selector: '[text]',
@@ -24,24 +26,25 @@ TextDirective.decorators = [
             },] },
 ];
 /** @nocollapse */
-TextDirective.ctorParameters = () => [];
+TextDirective.ctorParameters = function () { return []; };
 TextDirective.propDecorators = {
     'newValue': [{ type: Output, args: ['newValue',] },],
     'text': [{ type: Input, args: ['text',] },],
     'rg': [{ type: Input, args: ['rg',] },],
 };
-export class SliderDirective {
-    constructor(el) {
+var SliderDirective = (function () {
+    function SliderDirective(el) {
+        var _this = this;
         this.el = el;
         this.newValue = new EventEmitter();
-        this.listenerMove = (event) => { this.move(event); };
-        this.listenerStop = () => { this.stop(); };
+        this.listenerMove = function (event) { _this.move(event); };
+        this.listenerStop = function () { _this.stop(); };
     }
-    setCursor(event) {
-        let height = this.el.nativeElement.offsetHeight;
-        let width = this.el.nativeElement.offsetWidth;
-        let x = Math.max(0, Math.min(this.getX(event), width));
-        let y = Math.max(0, Math.min(this.getY(event), height));
+    SliderDirective.prototype.setCursor = function (event) {
+        var height = this.el.nativeElement.offsetHeight;
+        var width = this.el.nativeElement.offsetWidth;
+        var x = Math.max(0, Math.min(this.getX(event), width));
+        var y = Math.max(0, Math.min(this.getY(event), height));
         if (this.rgX !== undefined && this.rgY !== undefined) {
             this.newValue.emit({ s: x / width, v: (1 - y / height), rgX: this.rgX, rgY: this.rgY });
         }
@@ -51,31 +54,33 @@ export class SliderDirective {
         else {
             this.newValue.emit({ v: x / width, rg: this.rgX });
         }
-    }
-    move(event) {
+    };
+    SliderDirective.prototype.move = function (event) {
         event.preventDefault();
         this.setCursor(event);
-    }
-    start(event) {
+    };
+    SliderDirective.prototype.start = function (event) {
         this.setCursor(event);
         document.addEventListener('mousemove', this.listenerMove);
         document.addEventListener('touchmove', this.listenerMove);
         document.addEventListener('mouseup', this.listenerStop);
         document.addEventListener('touchend', this.listenerStop);
-    }
-    stop() {
+    };
+    SliderDirective.prototype.stop = function () {
         document.removeEventListener('mousemove', this.listenerMove);
         document.removeEventListener('touchmove', this.listenerMove);
         document.removeEventListener('mouseup', this.listenerStop);
         document.removeEventListener('touchend', this.listenerStop);
-    }
-    getX(event) {
+    };
+    SliderDirective.prototype.getX = function (event) {
         return (event.pageX !== undefined ? event.pageX : event.touches[0].pageX) - this.el.nativeElement.getBoundingClientRect().left - window.pageXOffset;
-    }
-    getY(event) {
+    };
+    SliderDirective.prototype.getY = function (event) {
         return (event.pageY !== undefined ? event.pageY : event.touches[0].pageY) - this.el.nativeElement.getBoundingClientRect().top - window.pageYOffset;
-    }
-}
+    };
+    return SliderDirective;
+}());
+export { SliderDirective };
 SliderDirective.decorators = [
     { type: Directive, args: [{
                 selector: '[slider]',
@@ -86,29 +91,33 @@ SliderDirective.decorators = [
             },] },
 ];
 /** @nocollapse */
-SliderDirective.ctorParameters = () => [
+SliderDirective.ctorParameters = function () { return [
     { type: ElementRef, },
-];
+]; };
 SliderDirective.propDecorators = {
     'newValue': [{ type: Output, args: ['newValue',] },],
     'slider': [{ type: Input, args: ['slider',] },],
     'rgX': [{ type: Input, args: ['rgX',] },],
     'rgY': [{ type: Input, args: ['rgY',] },],
 };
-export class SliderPosition {
-    constructor(h, s, v, a) {
+var SliderPosition = (function () {
+    function SliderPosition(h, s, v, a) {
         this.h = h;
         this.s = s;
         this.v = v;
         this.a = a;
     }
-}
-export class SliderDimension {
-    constructor(h, s, v, a) {
+    return SliderPosition;
+}());
+export { SliderPosition };
+var SliderDimension = (function () {
+    function SliderDimension(h, s, v, a) {
         this.h = h;
         this.s = s;
         this.v = v;
         this.a = a;
     }
-}
+    return SliderDimension;
+}());
+export { SliderDimension };
 //# sourceMappingURL=helpers.js.map

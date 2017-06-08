@@ -1,8 +1,8 @@
 import { Directive, Input, Output, EventEmitter, ElementRef, ViewContainerRef, ReflectiveInjector, ComponentFactoryResolver, ChangeDetectorRef } from '@angular/core';
 import { ColorPickerService } from './color-picker.service';
 import { ColorPickerComponent } from './color-picker.component';
-export class ColorPickerDirective {
-    constructor(vcRef, el, service, cfr, cdr) {
+var ColorPickerDirective = (function () {
+    function ColorPickerDirective(vcRef, el, service, cfr, cdr) {
         this.vcRef = vcRef;
         this.el = el;
         this.service = service;
@@ -34,7 +34,7 @@ export class ColorPickerDirective {
         this.ignoreChanges = false;
         this.created = false;
     }
-    ngOnChanges(changes) {
+    ColorPickerDirective.prototype.ngOnChanges = function (changes) {
         if (changes.cpToggle) {
             if (changes.cpToggle.currentValue)
                 this.openDialog();
@@ -55,59 +55,63 @@ export class ColorPickerDirective {
                 this.dialog.setPresetConfig(this.cpPresetLabel, this.cpPresetColors);
             }
         }
-    }
-    ngOnInit() {
-        let hsva = this.service.stringToHsva(this.colorPicker);
+    };
+    ColorPickerDirective.prototype.ngOnInit = function () {
+        var hsva = this.service.stringToHsva(this.colorPicker);
         if (hsva === null)
             hsva = this.service.stringToHsva(this.colorPicker, true);
         if (hsva == null) {
             hsva = this.service.stringToHsva(this.cpFallbackColor);
         }
-        let color = this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8');
+        var color = this.service.outputFormat(hsva, this.cpOutputFormat, this.cpAlphaChannel === 'hex8');
         if (color !== this.colorPicker) {
             //setTimeout(() => {
             this.colorPickerChange.emit(color);
             this.cdr.detectChanges();
         }
-    }
-    onClick() {
-        if (this.cpIgnoredElements.filter((item) => item === this.el.nativeElement).length === 0) {
+    };
+    ColorPickerDirective.prototype.onClick = function () {
+        var _this = this;
+        if (this.cpIgnoredElements.filter(function (item) { return item === _this.el.nativeElement; }).length === 0) {
             this.openDialog();
         }
-    }
-    openDialog() {
+    };
+    ColorPickerDirective.prototype.openDialog = function () {
         if (!this.created) {
             this.created = true;
-            const compFactory = this.cfr.resolveComponentFactory(ColorPickerComponent);
-            const injector = ReflectiveInjector.fromResolvedProviders([], this.vcRef.parentInjector);
-            const cmpRef = this.vcRef.createComponent(compFactory, 0, injector, []);
+            var compFactory = this.cfr.resolveComponentFactory(ColorPickerComponent);
+            var injector = ReflectiveInjector.fromResolvedProviders([], this.vcRef.parentInjector);
+            var cmpRef = this.vcRef.createComponent(compFactory, 0, injector, []);
             cmpRef.instance.setDialog(this, this.el, this.colorPicker, this.cpPosition, this.cpPositionOffset, this.cpPositionRelativeToArrow, this.cpOutputFormat, this.cpPresetLabel, this.cpPresetColors, this.cpCancelButton, this.cpCancelButtonClass, this.cpCancelButtonText, this.cpOKButton, this.cpOKButtonClass, this.cpOKButtonText, this.cpHeight, this.cpWidth, this.cpIgnoredElements, this.cpDialogDisplay, this.cpSaveClickOutside, this.cpAlphaChannel);
             this.dialog = cmpRef.instance;
         }
         else if (this.dialog) {
             this.dialog.openDialog(this.colorPicker);
         }
-    }
-    colorChanged(value, ignore = true) {
+    };
+    ColorPickerDirective.prototype.colorChanged = function (value, ignore) {
+        if (ignore === void 0) { ignore = true; }
         this.ignoreChanges = ignore;
         this.colorPickerChange.emit(value);
-    }
-    colorSelected(value) {
+    };
+    ColorPickerDirective.prototype.colorSelected = function (value) {
         this.colorPickerSelect.emit(value);
-    }
-    inputChanged(event) {
+    };
+    ColorPickerDirective.prototype.inputChanged = function (event) {
         this.cpInputChange.emit(event);
-    }
-    sliderChanged(event) {
+    };
+    ColorPickerDirective.prototype.sliderChanged = function (event) {
         this.cpSliderChange.emit(event);
-    }
-    changeInput(value) {
+    };
+    ColorPickerDirective.prototype.changeInput = function (value) {
         this.dialog.setColorFromString(value, true);
-    }
-    toggle(value) {
+    };
+    ColorPickerDirective.prototype.toggle = function (value) {
         this.cpToggleChange.emit(value);
-    }
-}
+    };
+    return ColorPickerDirective;
+}());
+export { ColorPickerDirective };
 ColorPickerDirective.decorators = [
     { type: Directive, args: [{
                 selector: '[colorPicker]',
@@ -118,13 +122,13 @@ ColorPickerDirective.decorators = [
             },] },
 ];
 /** @nocollapse */
-ColorPickerDirective.ctorParameters = () => [
+ColorPickerDirective.ctorParameters = function () { return [
     { type: ViewContainerRef, },
     { type: ElementRef, },
     { type: ColorPickerService, },
     { type: ComponentFactoryResolver, },
     { type: ChangeDetectorRef, },
-];
+]; };
 ColorPickerDirective.propDecorators = {
     'colorPicker': [{ type: Input, args: ['colorPicker',] },],
     'colorPickerSelect': [{ type: Output, args: ['colorPickerSelect',] },],

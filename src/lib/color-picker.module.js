@@ -4,8 +4,12 @@ import { TextDirective, SliderDirective } from './helpers';
 import { ColorPickerService } from './color-picker.service';
 import { ColorPickerComponent } from './color-picker.component';
 import { ColorPickerDirective } from './color-picker.directive';
-export class ColorPickerModule {
-}
+var ColorPickerModule = (function () {
+    function ColorPickerModule() {
+    }
+    return ColorPickerModule;
+}());
+export { ColorPickerModule };
 ColorPickerModule.decorators = [
     { type: NgModule, args: [{
                 imports: [CommonModule],
@@ -16,5 +20,5 @@ ColorPickerModule.decorators = [
             },] },
 ];
 /** @nocollapse */
-ColorPickerModule.ctorParameters = () => [];
+ColorPickerModule.ctorParameters = function () { return []; };
 //# sourceMappingURL=color-picker.module.js.map
